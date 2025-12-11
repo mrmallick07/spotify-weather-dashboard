@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 WeatherBeats - Music Mood Analyzer</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            --glass: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.2);
+            --text: #ffffff;
+            --text-light: rgba(255, 255, 255, 0.8);
+            --blue: #00d4ff;
+            --purple: #b794f6;
+            --pink: #f093fb;
+            --orange: #ff9500;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--primary);
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .brand-icon {
+            background: linear-gradient(45deg, var(--blue), var(--purple));
+            padding: 0.8rem;
+            border-radius: 12px;
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+        
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--blue), var(--purple));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Section */
+        .section {
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.3s; }
+        .section:nth-child(4) { animation-delay: 0.4s; }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .section-icon {
+            background: linear-gradient(45deg, var(--blue), var(--purple));
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1.5rem;
+        }
+        
+        /* City Grid */
+        .city-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .city-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .city-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--blue), var(--purple), var(--pink));
+        }
+        
+        .city-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(31, 38, 135, 0.4);
+        }
+        
+        .city-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .city-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .weather-icon {
+            font-size: 2.5rem;
+        }
+        
+        .weather-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .weather-stat {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+        
+        .weather-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--blue), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .weather-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+        
+        .mood-section {
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+        }
+        
+        .mood-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .mood-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .mood-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .mood-icon {
+            font-size: 1.2rem;
+            width: 25px;
+        }
+        
+        .mood-label {
+            width: 70px;
+            font-weight: 500;
+        }
+        
+        .bar-container {
+            flex: 1;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 9px;
+            overflow: hidden;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            border-radius: 9px;
+            transition: width 1s ease;
+        }
+        
+        .bar-fill.happy { background: linear-gradient(45deg, #48bb78, #68d391); }
+        .bar-fill.energetic { background: linear-gradient(45deg, #ed8936, #f6ad55); }
+        .bar-fill.neutral { background: linear-gradient(45deg, #4299e1, #63b3ed); }
+        .bar-fill.sad { background: linear-gradient(45deg, #9f7aea, #b794f6); }
+        
+        .mood-value {
+            width: 40px;
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        /* Insights */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .insight-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .insight-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .insight-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .insight-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .insight-label {
+            font-size: 1rem;
+            color: var(--text-light);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .city-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fas fa-music"></i>
+                </div>
+                <span>WeatherBeats</span>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-secondary" onclick="showDemo()">
+                    <i class="fas fa-magic"></i> Demo
+                </button>
+                <button class="btn btn-primary" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Key Insights -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <div class="section-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    Key Insights
+                </h2>
+            </div>
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <div class="insight-icon">🌧️</div>
+                    <div class="insight-value">35%</div>
+                    <div class="insight-label">More sad songs on rainy days</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">☀️</div>
+                    <div class="insight-value">23%</div>
+                    <div class="insight-label">Mumbai loves energetic music</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">🌙</div>
+                    <div class="insight-value">40%</div>
+                    <div class="insight-label">Evening music is mellower</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon">🎵</div>
+                    <div class="insight-value">78%</div>
+                    <div class="insight-label">Weather-mood correlation</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- City Weather & Music -->
+        <section class="section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <div class="section-icon">
+                        <i class="fas fa-globe-asia"></i>
+                    </div>
+                    City Weather & Music Mood
+                </h2>
+            </div>
+            <div class="city-grid" id="cityGrid">
+                <!-- Cities will be loaded here -->
+            </div>
+        </section>
+    </div>
+    
+    <script>
+        // Demo data
+        const cities = [
+            { name: 'Mumbai', temp: 28, condition: 'Partly Cloudy', humidity: 75, icon: '⛅', mood: { happy: 45, energetic: 30, neutral: 15, sad: 10 } },
+            { name: 'Delhi', temp: 32, condition: 'Sunny', humidity: 45, icon: '☀️', mood: { happy: 55, energetic: 25, neutral: 15, sad: 5 } },
+            { name: 'Bangalore', temp: 24, condition: 'Cloudy', humidity: 65, icon: '☁️', mood: { happy: 35, energetic: 20, neutral: 25, sad: 20 } },
+            { name: 'Kolkata', temp: 30, condition: 'Rainy', humidity: 80, icon: '🌧️', mood: { happy: 25, energetic: 15, neutral: 25, sad: 35 } },
+            { name: 'Chennai', temp: 31, condition: 'Hot', humidity: 70, icon: '🔥', mood: { happy: 40, energetic: 35, neutral: 20, sad: 5 } }
+        ];
+        
+        function createCityCard(city) {
+            return `
+                <div class="city-card">
+                    <div class="city-header">
+                        <div class="city-name">${city.name}</div>
+                        <div class="weather-icon">${city.icon}</div>
+                    </div>
+                    
+                    <div class="weather-info">
+                        <div class="weather-stat">
+                            <div class="weather-value">${city.temp}°</div>
+                            <div class="weather-label">Temperature</div>
+                        </div>
+                        <div class="weather-stat">
+                            <div class="weather-value">${city.humidity}%</div>
+                            <div class="weather-label">Humidity</div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-bottom: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 15px;">
+                        <div style="font-size: 1.1rem; font-weight: 600;">${city.condition}</div>
+                    </div>
+                    
+                    <div class="mood-section">
+                        <div class="mood-title">🎵 Music Mood Distribution</div>
+                        <div class="mood-bars">
+                            <div class="mood-bar">
+                                <div class="mood-icon">😊</div>
+                                <div class="mood-label">Happy</div>
+                                <div class="bar-container">
+                                    <div class="bar-fill happy" style="width: ${city.mood.happy}%"></div>
+                                </div>
+                                <div class="mood-value">${city.mood.happy}%</div>
+                            </div>
+                            <div class="mood-bar">
+                                <div class="mood-icon">⚡</div>
+                                <div class="mood-label">Energetic</div>
+                                <div class="bar-container">
+                                    <div class="bar-fill energetic" style="width: ${city.mood.energetic}%"></div>
+                                </div>
+                                <div class="mood-value">${city.mood.energetic}%</div>
+                            </div>
+                            <div class="mood-bar">
+                                <div class="mood-icon">😐</div>
+                                <div class="mood-label">Neutral</div>
+                                <div class="bar-container">
+                                    <div class="bar-fill neutral" style="width: ${city.mood.neutral}%"></div>
+                                </div>
+                                <div class="mood-value">${city.mood.neutral}%</div>
+                            </div>
+                            <div class="mood-bar">
+                                <div class="mood-icon">😢</div>
+                                <div class="mood-label">Sad</div>
+                                <div class="bar-container">
+                                    <div class="bar-fill sad" style="width: ${city.mood.sad}%"></div>
+                                </div>
+                                <div class="mood-value">${city.mood.sad}%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function loadCities() {
+            const container = document.getElementById('cityGrid');
+            container.innerHTML = cities.map(city => createCityCard(city)).join('');
+        }
+        
+        function showDemo() {
+            alert('🎵 Demo mode active! This shows how weather patterns influence music preferences across Indian cities.');
+        }
+        
+        function refreshData() {
+            // Simulate refresh
+            document.body.style.opacity = '0.7';
+            setTimeout(() => {
+                loadCities();
+                document.body.style.opacity = '1';
+            }, 500);
+        }
+        
+        // Initialize immediately
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎵 WeatherBeats loading...');
+            loadCities();
+            console.log('🎵 WeatherBeats ready!');
+        });
+    </script>
+</body>
+</html>
