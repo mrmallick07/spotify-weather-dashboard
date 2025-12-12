@@ -55,14 +55,11 @@ Click **"Demo Mode"** to explore the dashboard with sample data!
 
 ## 📸 Screenshots
 
-### Dashboard Overview
-*Modern, responsive interface showing weather and music correlations*
+### Full Dashboard View
+![Dashboard Overview](dashboard-screenshot1.png)
 
-### City Weather Cards
-*Each city displays current weather conditions alongside music mood distribution*
-
-### Interactive Charts
-*Real-time visualizations showing weather-music correlations across cities*
+### City Cards & Mood Analysis
+![City Cards](dashboard-screenshot2.png)
 
 ---
 
